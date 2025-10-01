@@ -5,6 +5,7 @@ const regexCNPJ = /\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}/;
 const regexCEP = /\d{5}-\d{3}/;
 const regexTelefone = /((\(\d{2}\))|(\d{2}))\s?\d{4,5}-?\d{4}/;
 const regexLinkedin = /(https:\/\/)?(www\.)?linkedin\.com\/in\/\w+(\/)?/;
+const regexTags = /Java|Python|JavaScript|TypeScript|PHP|Kotlin|Groovy|SQL|Ruby|C/i;
 const candidatos = JSON.parse(localStorage.getItem("candidatos") || "[]");
 const empresas = JSON.parse(localStorage.getItem("empresas") || "[]");
 const candForm = document.getElementById("candForm");
@@ -41,7 +42,8 @@ if (candForm) {
         const skills = document.getElementById("candSkills").value
             .split(",")
             .map((s) => s.trim())
-            .filter(Boolean);
+            .filter(Boolean)
+            .filter((s) => regexTags.test(s));
         candidatos.push({ nome, email, cpf, telefone, linkedin, skills });
         localStorage.setItem("candidatos", JSON.stringify(candidatos));
         alert("Candidato cadastrado!");
@@ -56,7 +58,7 @@ function renderCandidatos() {
     lista.innerHTML = "";
     candidatos.forEach((c) => {
         const li = document.createElement("li");
-        li.textContent = `${c.nome} - Habilidades: ${c.skills.join(", ")} - Linkedin: ${c.linkedin}`;
+        li.textContent = `${c.nome} | [Habilidades]: ${c.skills.join(", ")} | [Linkedin]: ${c.linkedin}`;
         lista.appendChild(li);
     });
 }
@@ -91,21 +93,8 @@ if (empForm) {
         localStorage.setItem("empresas", JSON.stringify(empresas));
         alert("Empresa cadastrada!");
         empForm.reset();
-        renderEmpresas();
     });
 }
-function renderEmpresas() {
-    const lista = document.getElementById("listaEmpresas");
-    if (!lista)
-        return;
-    lista.innerHTML = "";
-    empresas.forEach((e) => {
-        const li = document.createElement("li");
-        li.textContent = `${e.nome} - Vagas: ${e.vagas.join(", ")}`;
-        lista.appendChild(li);
-    });
-}
-renderEmpresas();
 function renderVagas() {
     const lista = document.getElementById("listaVagas");
     if (!lista)
